@@ -15,11 +15,11 @@
  */
 package com.google.training.appdev.services.gcp.datastore;
 
-// TODO: Import the com.google.cloud.datastore.* package
 
 
+import com.google.cloud.datastore.*;
 
-// END TODO
+
 
 import com.google.training.appdev.services.gcp.domain.Question;
 
@@ -32,67 +32,45 @@ import org.springframework.stereotype.Service;
 @Service
 public class QuestionService {
 
-// TODO: Create a Datastore client object, datastore
-// The DatastoreOptions class has a getDefaultInstance()
-// static method.
-// Use the getService() method of the DatastoreOptions
-// object to get the Datastore client
-
-
-// END TODO
-
-// TODO: Declare a static final String named kind
-//The Datastore key is the equivalent of a primary key in a relational database.
-// There are two main ways of writing a key:
-// 1. Specify the kind, and let Datastore generate a unique numeric id
-// 2. Specify the kind and a unique string id
+	private Datastore datastore = DatastoreOptions.getDefaultInstance().getService();
 
 
 
-// END TODO
+	private static final String ENTITY_KIND = "Question";
+	private final KeyFactory keyFactory = datastore.newKeyFactory().setKind(ENTITY_KIND);
 
-// TODO: Create a KeyFactory for Question entities
 
 
-// END TODO
-
-// The createQuestion(Question question) method 
-// is passed a Question object using data from the form
+// The createQuestion(Question question) method is passed a Question object using data from the form
 // Extract the form data and add it to Datastore
 
-// TODO: Modify return type to Key
-
-    public String createQuestion(Question question) {
-
-// END TODO
-
-// TODO: Declare the entity key, 
-// with a Datastore allocated id
+    public Key createQuestion(Question question) {
 
 
-// END TODO
+// Declare the entity key, with a Datastore allocated id
+    	Key key = datastore.allocateId(keyFactory.newKey());
  
-// TODO: Declare the entity object, with the key and data
-// The entity's members are set using the Entity.Builder. 
-// This has a set method for property names and values
 // Values are retrieved from the Domain object
+    	
+    	 Entity questionEntity = Entity.newBuilder(key)
+    		      .set(Question.QUIZ, question.getQuiz())
+    		      .set(Question.AUTHOR, question.getAuthor())
+    		      .set(Question.TITLE, question.getTitle())
+    		      .set(Question.ANSWER_ONE,question.getAnswerOne())
+    		      .set(Question.ANSWER_TWO, question.getAnswerTwo())
+    		      .set(Question.ANSWER_THREE,question.getAnswerThree())
+    		      .set(Question.ANSWER_FOUR, question.getAnswerFour())
+    		      .set(Question.CORRECT_ANSWER,
+    		                              question.getCorrectAnswer())
+    		      .build();
 
 
+//  Save the entity
+    	 datastore.put(questionEntity);
 
+// Return the key
+        return key;
 
-
-
-// END TODO
-
-// TODO: Save the entity
-
-// END TODO
-
-// TODO: Return the key
-
-        return "Replace this string with the key";
-
-// END TODO
     }
 
     public List<Question> getAllQuestions(String quiz){
